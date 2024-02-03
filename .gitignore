@@ -1,1 +1,4 @@
 files/
+.venv/
+src/test.py
+src/__pycache__/
