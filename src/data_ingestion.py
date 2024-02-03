@@ -1,5 +1,5 @@
 import pandas as pd
-from params import matches_df, match_ids, player_names
+from params import matches_df_seconds, match_ids, player_names
 
 def fetch_matches_by_matches_id(df, match_id):
   match_df = df[df['match_id'] == match_id]
@@ -15,7 +15,6 @@ def save_matches_by_id_to_csv(df, match_ids):
     match_df = fetch_matches_by_matches_id(df, match_id)
     match_df.to_csv(f'output/matches_data/{match_id}.csv', index=False)
 
-
 def save_players_in_matches_to_csv(df, match_ids):
   players_in_matches = []
   for match_id in match_ids:
@@ -30,3 +29,7 @@ def save_player_names_to_csv(player_names):
   players_df = pd.DataFrame(player_names, columns=['players'])
   players_df.to_csv('output/player_names.csv', index=False)
 
+
+save_players_in_matches_to_csv(matches_df_seconds, match_ids)
+save_matches_by_id_to_csv(matches_df_seconds, match_ids)
+save_player_names_to_csv(player_names)

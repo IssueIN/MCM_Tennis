@@ -22,6 +22,10 @@ def get_player_names(df):
   names = all_players.unique()
   return names
 
+def convert_time_to_seconds(df, column_name):
+  df[column_name] = pd.to_timedelta(df[column_name])
+  df[column_name] = df[column_name].dt.total_seconds()
+  return df
 
 
 
