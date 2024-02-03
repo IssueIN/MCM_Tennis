@@ -1,36 +1,35 @@
-import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
-# Step 1: Generate simulated match data
-np.random.seed(42)  # For consistency in results
-points = 100  # Assuming the match has 100 points
+# Load the match data
+file_path = 'Wimbledon_featured_matches.csv'  # Adjust this to your file path
+data = pd.read_csv(file_path)
 
-# Probability of the server winning a point
-prob_serve_win = 0.6
-# Generate the outcome of each point, 1 for server win, 0 for receiver win
-point_results = np.random.choice([1, 0], size=points, p=[prob_serve_win, 1-prob_serve_win])
+# Calculate separate momentum for player 1 and player 2
+momentum_window = 5  # Number of points to consider for calculating momentum
+player1_momentum = [0]  # Initial momentum for player 1 is 0
+player2_momentum = [0]  # Initial momentum for player 2 is 0
 
-
-
-# Step 2: Calculate momentum
-# Calculate momentum based on the last 5 points
-momentum_window = 5
-momentum = [0]  # Initial momentum is 0
-for i in range(1, points):
-    # Calculate momentum within the last 5 points (server wins - receiver wins)
-    window_start = max(0, i-momentum_window)
+for i in range(1, len(data)):
+    window_start = max(0, i - momentum_window)
     window_end = i
-    window_momentum = point_results[window_start:window_end].sum() - (momentum_window - point_results[window_start:window_end].sum())
-    momentum.append(window_momentum)
+    points_in_window = data.iloc[window_start:window_end]
+    total_points = len(points_in_window)
+    player1_points_won = (points_in_window['point_victor'] == 1).sum()
+    player2_points_won = (points_in_window['point_victor'] == 2).sum()
+    player1_momentum_value = player1_points_won / total_points if total_points > 0 else 0
+    player2_momentum_value = player2_points_won / total_points if total_points > 0 else 0
+    player1_momentum.append(player1_momentum_value)
+    player2_momentum.append(player2_momentum_value)
 
-
-
-# Step 3: Visualize match momentum
-plt.figure(figsize=(10, 6))
-plt.plot(momentum, label='Match Momentum')
+# Visualize separate momentum for player 1 and player 2
+plt.figure(figsize=(12, 8))
+plt.plot(player1_momentum, label='Player 1 Momentum')
+plt.plot(player2_momentum, label='Player 2 Momentum', linestyle='--')
 plt.xlabel('Point Number')
-plt.ylabel('Momentum')
-plt.title('Match Momentum Over Time')
+plt.ylabel('Momentum (Winning Rate in Last 5 Points)')
+plt.title('Separate Momentum for Player 1 and Player 2 Over Time')
 plt.legend()
 plt.grid(True)
 plt.show()
+
